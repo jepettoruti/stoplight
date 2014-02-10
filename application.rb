@@ -76,8 +76,10 @@ def load_projects
       else
         server_projects
       end
+    
     end
-  end.map(&:join).collect{ |t| t['projects'] }.compact.flatten.sort
+  end
+  @projects = @projects.map(&:join).collect{ |t| t['projects'] }.compact.flatten.sort
 end
 
 def collect_regexes(projects)

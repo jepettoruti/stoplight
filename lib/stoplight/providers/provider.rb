@@ -53,7 +53,6 @@ module Stoplight::Providers
     #   - `method`: the HTTP method (get, post, put, etc)
     def load_server_data(options = {})
       url = @options['url'].chomp('/') + '/' + (options[:path] || builds_path).chomp('/').reverse.chomp('/').reverse
-
       url_options = {}
 
       if @options['username'] || @options['password']
@@ -69,6 +68,10 @@ module Stoplight::Providers
         }
       end
 
+      if @options['access_token'] && url_options[:query]
+        url_options[:query][:access_token] = @options['access_token']
+      end
+
       url_options[:http_proxyaddr] ||= @options['http_proxyaddr']
       url_options[:http_proxyport] ||= @options['http_proxyport']
       url_options[:http_proxyuser] ||= @options['http_proxyuser']
@@ -80,6 +83,8 @@ module Stoplight::Providers
       url_options.delete_if { |k,v| v.nil? }
 
       http_method = options[:method] || 'get'
+      p url
+      p url_options
       response = HTTParty.send(http_method.downcase.to_sym, url, url_options)
 
       if [200, 301, 302].include?(response.code)
